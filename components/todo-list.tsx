@@ -1,66 +1,70 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { Plus, Trash2, CheckSquare, Square } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useState, useEffect } from "react";
+import { Plus, Trash2, CheckSquare, Square } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface Todo {
-  id: string
-  text: string
-  completed: boolean
+  id: string;
+  text: string;
+  completed: boolean;
 }
 
 export function TodoList() {
-  const [todos, setTodos] = useState<Todo[]>([])
-  const [newTodo, setNewTodo] = useState("")
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [newTodo, setNewTodo] = useState("");
 
   // Load todos from localStorage on component mount
   useEffect(() => {
-    const savedTodos = localStorage.getItem("todos")
+    const savedTodos = localStorage.getItem("todos");
     if (savedTodos) {
       try {
-        setTodos(JSON.parse(savedTodos))
+        setTodos(JSON.parse(savedTodos));
       } catch (e) {
-        console.error("Failed to parse todos from localStorage")
+        console.error("Failed to parse todos from localStorage");
       }
     }
-  }, [])
+  }, []);
 
   // Save todos to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos))
-  }, [todos])
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
   const addTodo = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (newTodo.trim() === "") return
+    e.preventDefault();
+    if (newTodo.trim() === "") return;
 
     const todo: Todo = {
       id: Date.now().toString(),
       text: newTodo,
       completed: false,
-    }
+    };
 
-    setTodos([...todos, todo])
-    setNewTodo("")
-  }
+    setTodos([...todos, todo]);
+    setNewTodo("");
+  };
 
   const toggleTodo = (id: string) => {
-    setTodos(todos.map((todo) => (todo.id === id ? { ...todo, completed: !todo.completed } : todo)))
-  }
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+      ),
+    );
+  };
 
   const deleteTodo = (id: string) => {
-    setTodos(todos.filter((todo) => todo.id !== id))
-  }
+    setTodos(todos.filter((todo) => todo.id !== id));
+  };
 
   return (
     <Card className="bg-gray-800/30 backdrop-blur-lg border-0 shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg">Todo List</CardTitle>
+        <CardTitle className="text-lg">To do List</CardTitle>
       </CardHeader>
       <CardContent className="p-4">
         <form onSubmit={addTodo} className="flex space-x-2 mb-4">
@@ -83,7 +87,9 @@ export function TodoList() {
 
         <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
           {todos.length === 0 ? (
-            <p className="text-gray-400 text-sm text-center py-4">No tasks yet. Add one above!</p>
+            <p className="text-gray-400 text-sm text-center py-4">
+              No tasks yet. Add one above!
+            </p>
           ) : (
             todos.map((todo) => (
               <div
@@ -101,7 +107,9 @@ export function TodoList() {
                       <Square className="h-5 w-5" />
                     )}
                   </button>
-                  <span className={`text-sm ${todo.completed ? "line-through text-gray-500" : "text-gray-200"}`}>
+                  <span
+                    className={`text-sm ${todo.completed ? "line-through text-gray-500" : "text-gray-200"}`}
+                  >
                     {todo.text}
                   </span>
                 </div>
@@ -117,6 +125,5 @@ export function TodoList() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
-
