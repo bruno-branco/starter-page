@@ -1,16 +1,28 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Newspaper } from "lucide-react"
+"use client";
+import { getNews } from "@/app/actions";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { Newspaper } from "lucide-react";
 
 interface NewsItem {
-  title: string
-  time: string
+  title: string;
+  time: string;
 }
 
 interface NewsWidgetProps {
-  newsItems: NewsItem[]
+  newsItems: NewsItem[];
 }
 
 export function NewsWidget({ newsItems }: NewsWidgetProps) {
+  const { data: news, isLoading } = useQuery({
+    queryKey: ["news"],
+    queryFn: () => getNews(),
+    refetchInterval: Infinity,
+    staleTime: Infinity,
+  });
+
+  console.log(news);
+
   return (
     <Card className="bg-gray-800/30 backdrop-blur-lg border-0 shadow-sm">
       <CardHeader className="pb-2">
@@ -21,8 +33,11 @@ export function NewsWidget({ newsItems }: NewsWidgetProps) {
       </CardHeader>
       <CardContent className="p-4">
         <ul className="space-y-3">
-          {newsItems.map((item, index) => (
-            <li key={index} className="border-b border-gray-700/50 pb-2 last:border-0 last:pb-0">
+          {news?.map((item: NewsItem) => (
+            <li
+              key={item.title}
+              className="border-b border-gray-700/50 pb-2 last:border-0 last:pb-0"
+            >
               <p className="text-sm text-gray-200">{item.title}</p>
               <p className="text-xs text-gray-400 mt-1">{item.time}</p>
             </li>
@@ -30,6 +45,5 @@ export function NewsWidget({ newsItems }: NewsWidgetProps) {
         </ul>
       </CardContent>
     </Card>
-  )
+  );
 }
-

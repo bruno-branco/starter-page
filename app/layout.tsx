@@ -26,7 +26,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <Providers>{children}</Providers>
         </ThemeProvider>
       </body>
     </html>
@@ -34,4 +34,4 @@ export default function RootLayout({
 }
 
 import "./globals.css";
-
+import Providers from "./providers";

@@ -9,8 +9,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GoogleLogo } from "@/components/icons/google-logo";
 import { ChatGPTLogo } from "@/components/icons/chatgpt-logo";
-import { Loader2 } from "lucide-react";
+import {
+  GithubIcon,
+  IceCream2Icon,
+  Loader2,
+  TwitchIcon,
+  TwitterIcon,
+  XIcon,
+  YoutubeIcon,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GithubLogo } from "@/components/icons/github-logo";
 
 export default function HomePage() {
   const [weather, setWeather] = useState({
@@ -31,11 +40,15 @@ export default function HomePage() {
 
   // Sample custom links - replace with your own
   const customLinks = [
-    { title: "GitHub", url: "https://github.com" },
-    { title: "Gmail", url: "https://mail.google.com" },
-    { title: "YouTube", url: "https://youtube.com" },
-    { title: "Twitter", url: "https://twitter.com" },
-    { title: "Reddit", url: "https://reddit.com" },
+    {
+      title: "GitHub",
+      url: "https://github.com",
+      icon: <GithubIcon />,
+    },
+    { title: "Gmail", url: "https://mail.google.com", icon: <GoogleLogo /> },
+    { title: "YouTube", url: "https://youtube.com", icon: <YoutubeIcon /> },
+    { title: "Twitter", url: "https://twitter.com", icon: <TwitterIcon /> },
+    { title: "Reddit", url: "https://reddit.com", icon: <IceCream2Icon /> },
     { title: "Netflix", url: "https://netflix.com" },
   ];
 
@@ -110,61 +123,30 @@ export default function HomePage() {
             </form>
 
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
                 const input = e.currentTarget.querySelector(
                   "input",
                 ) as HTMLInputElement;
                 const message = input.value.trim();
 
-                if (message) {
-                  // Store the message in localStorage
-                  localStorage.setItem("chatgpt_message", message);
+                if (!message) return;
 
-                  // Open ChatGPT in a new tab
-                  const chatWindow = window.open(
-                    "https://chat.openai.com/",
-                    "_blank",
-                  );
+                try {
+                  await navigator.clipboard.writeText(message); // Copy message to clipboard
+                } catch (err) {}
 
-                  // Create a script to inject the message
-                  if (chatWindow) {
-                    chatWindow.addEventListener("load", () => {
-                      chatWindow.eval(`
-                        // Wait for the ChatGPT input to be available
-                        const checkInterval = setInterval(() => {
-                          const textarea = document.querySelector('textarea');
-                          if (textarea) {
-                            clearInterval(checkInterval);
-                            
-                            // Get the message from localStorage
-                            const message = localStorage.getItem('chatgpt_message');
-                            if (message) {
-                              // Set the value and dispatch input event
-                              textarea.value = message;
-                              textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                              
-                              // Find and click the send button
-                              setTimeout(() => {
-                                const buttons = Array.from(document.querySelectorAll('button'));
-                                const sendButton = buttons.find(button => 
-                                  button.textContent === 'Send' || 
-                                  button.querySelector('svg[data-icon="paper-plane"]')
-                                );
-                                if (sendButton) sendButton.click();
-                                
-                                // Clear the stored message
-                                localStorage.removeItem('chatgpt_message');
-                              }, 500);
-                            }
-                          }
-                        }, 500);
-                      `);
-                    });
-                  }
-                } else {
-                  // If no message, just open ChatGPT
-                  window.open("https://chat.openai.com/", "_blank");
+                // Open ChatGPT
+                const chatWindow = window.open(
+                  "https://chat.openai.com/",
+                  "_blank",
+                );
+
+                // Auto-focus the text area when tab loads
+                if (chatWindow) {
+                  setTimeout(() => {
+                    chatWindow.focus();
+                  }, 1000);
                 }
               }}
               className="space-y-2"
@@ -189,7 +171,12 @@ export default function HomePage() {
           {/* Customizable links grid - 2 rows of 3 */}
           <div className="grid grid-cols-3 gap-4">
             {customLinks.map((link, i) => (
-              <CustomLinkCard key={i} title={link.title} url={link.url} />
+              <CustomLinkCard
+                key={i}
+                title={link.title}
+                url={link.url}
+                icon={link.icon || ""}
+              />
             ))}
           </div>
 
